@@ -20,12 +20,12 @@ function onTargetStartBtn() {
     const randomColor = getRandomHexColor();
     refs.body.style.backgroundColor = randomColor;
   }, 1000);
-  refs.btnStart.setAttribute('disabled', '');
-  refs.btnStop.removeAttribute('disabled');
+  refs.btnStart.disabled = true;
+  refs.btnStop.disabled = false;
 }
 
 function onTargetStopBtn() {
   clearInterval(timerId);
-  refs.btnStop.setAttribute('disabled', '');
-  refs.btnStart.removeAttribute('disabled');
+  refs.btnStop.disabled = true;
+  refs.btnStart.disabled = false;
 }

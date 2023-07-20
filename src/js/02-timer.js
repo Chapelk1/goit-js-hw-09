@@ -9,13 +9,11 @@ const refs = {
   hours: document.querySelector('[data-hours]'),
   minutes: document.querySelector('[data-minutes]'),
   seconds: document.querySelector('[data-seconds]'),
+  remainingTime: 0,
+  timerId: null,
+  boolean: true,
 };
 btnDisabled();
-refs.btnStart.addEventListener('click', onTargetStartBtn)
-
-let remainingTime = 0;
-let timerId = null;
-let boolean = true;
 
 const options = {
   enableTime: true,
@@ -23,10 +21,10 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
     onClose(selectedDates) {
-        if (boolean) {
+        if (refs.boolean) {
           const setTime = selectedDates[0].getTime();
           if (setTime > Date.now()) {
-            remainingTime = setTime;
+            refs.remainingTime = setTime;
             rmBtnDisabled();
             return Notiflix.Notify.success('A valid date is selected',{position: 'center-top'});
           }
@@ -40,25 +38,29 @@ const options = {
 };
 
 const flatpickr = new Flatpickr(refs.date, options);
+refs.btnStart.addEventListener('click', onTargetStartBtn);
 
 function onTargetStartBtn(e) {
-    if (boolean) {
+    if (refs.boolean) {
         btnDisabled();
-        boolean = false;
-        timerId = setInterval(() => {
+        refs.boolean = false;
+        refs.timerId = setInterval(() => {
           const { days, hours, minutes, seconds } = convertMs(
-            remainingTime - Date.now()
+            refs.remainingTime - Date.now()
           );
-          if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
-              clearInterval(timerId);
-              boolean = true;
-              flatpickr.clear();
-          }
+          timerEnd({ days, hours, minutes, seconds });
           settingTheTime({ days, hours, minutes, seconds });
         }, 1000); 
     }  
 };
 
+function timerEnd({ days, hours, minutes, seconds }) {
+  if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
+    clearInterval(refs.timerId);
+    refs.boolean = true;
+    flatpickr.clear();
+  }
+}
 
 
 function settingTheTime({ days, hours, minutes, seconds }) {
@@ -92,9 +94,9 @@ function convertMs(ms) {
 }
 
 function btnDisabled() {
-    refs.btnStart.setAttribute('disabled', '');
+    refs.btnStart.disabled = true;
 }
 
 function rmBtnDisabled() {
-  refs.btnStart.removeAttribute('disabled');
+  refs.btnStart.disabled = false;
 }
