@@ -44,22 +44,25 @@ function onTargetStartBtn(e) {
     if (refs.boolean) {
         btnDisabled();
         refs.boolean = false;
-        refs.timerId = setInterval(() => {
-          const { days, hours, minutes, seconds } = convertMs(
-            refs.remainingTime - Date.now()
-          );
-          timerEnd({ days, hours, minutes, seconds });
+      refs.timerId = setInterval(() => {
+          const remainingActualTime = refs.remainingTime - Date.now();
+          const { days, hours, minutes, seconds } =
+          convertMs(remainingActualTime);
+        if (remainingActualTime < 1000) {
+          timerEnd(remainingActualTime);
+        }
           settingTheTime({ days, hours, minutes, seconds });
         }, 1000); 
     }  
 };
 
-function timerEnd({ days, hours, minutes, seconds }) {
-  if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
+function timerEnd() {
     clearInterval(refs.timerId);
     refs.boolean = true;
     flatpickr.clear();
-  }
+    Notiflix.Notify.success('Success!', {
+      position: 'center-top',
+    });
 }
 
 
